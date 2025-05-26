@@ -17,10 +17,12 @@ from env.config import TOKEN
 class MarketDataStream:
     """Market data stream object"""
 
-    def __init__(self, figi_id, interval: SubscriptionInterval = None):
-        self.instrument_id = figi_id
+    def __init__(self, figi_id_list: list, interval: SubscriptionInterval = None):
+        self.instrument_id_list = figi_id_list
+
         self.interval = interval
         self.set_interval()
+        self.set_instruments_list()
         asyncio.run(self.wait_data())
 
     def set_interval(
@@ -29,6 +31,17 @@ class MarketDataStream:
         """Set new interval to get market data"""
         if not self.interval:
             self.interval = new_interval
+
+    def set_instruments_list(self):
+        """Sets instruments list"""
+        self.instruments = []
+        for item in self.instrument_id_list:
+            self.instruments.append(
+                CandleInstrument(
+                    figi=item,
+                    interval=self.interval,
+                )
+            )
 
     async def wait_data(self):
         """Wait data from broker"""
@@ -40,16 +53,13 @@ class MarketDataStream:
 
     async def request_iterator(self):
         """Returns data object from server"""
-        yield MarketDataRequest(
+        resp = MarketDataRequest(
             subscribe_candles_request=SubscribeCandlesRequest(
                 subscription_action=SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
-                instruments=[
-                    CandleInstrument(
-                        figi=self.instrument_id,
-                        interval=self.interval,
-                    )
-                ],
+                instruments=self.instruments,
             )
         )
+
+        yield resp
         while True:
             await asyncio.sleep(1)

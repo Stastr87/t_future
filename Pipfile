@@ -14,3 +14,4 @@ flake8 = "==7.1.1"
 
 [packages]
 tinkoff-investments = "0.2.0b111"
+pytz = "*"
