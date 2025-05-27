@@ -1,4 +1,5 @@
 """monitoring prices"""
+
 import time
 from pprint import pprint
 
@@ -12,20 +13,21 @@ def watch_futures(instrument_guids):
     stream = MarketDataStream(figi_id_list=instrument_guids)
     while True:
         for item in instrument_guids:
-            future = InstrumentsService().get_instrument_by(item).instrument
-            # pprint(future.__dict__)
+            instrument = InstrumentsService().get_instrument_by(item).instrument
+            # pprint(instrument.__dict__)
             print("==================================")
-            print(future.name)
-            print(future.figi)
+            print(instrument.name)
+            print(instrument.figi)
             print("==================================")
         print("market data:")
         pprint(stream.data)
-        time.sleep(10)
+        time.sleep(1)
+
 
 if __name__ == "__main__":
 
-
-    figi_list = ["FUTASTR09250", "FUTASTR06250"]
+    # figi_list = ["FUTASTR09250", "FUTASTR06250"]
+    figi_list = ["BBG004730N88"]
 
     watch_futures_thread = CustomThread(
         "watch_futures", watch_futures(figi_list), daemon=False

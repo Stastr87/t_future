@@ -51,18 +51,12 @@ class MarketDataStream:
 
         self.data = await asyncio.gather(get_data_task)
 
-
     async def get_quotes(self):
         """Wait data from broker"""
-        print('wait data run')
         async with AsyncClient(TOKEN) as client:
             async for marketdata in client.market_data_stream.market_data_stream(
-                self.request_iterator()
-            ):
-
+                self.request_iterator()):
                 return marketdata
-
-
 
     async def request_iterator(self):
         """Returns data object from server"""
@@ -75,4 +69,4 @@ class MarketDataStream:
 
         yield resp
         while True:
-            await asyncio.sleep(10)
+            await asyncio.sleep(20)
