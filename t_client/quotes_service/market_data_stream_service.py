@@ -55,7 +55,8 @@ class MarketDataStream:
         """Wait data from broker"""
         async with AsyncClient(TOKEN) as client:
             async for marketdata in client.market_data_stream.market_data_stream(
-                self.request_iterator()):
+                self.request_iterator()
+            ):
                 return marketdata
 
     async def request_iterator(self):

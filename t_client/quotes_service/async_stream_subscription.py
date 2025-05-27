@@ -1,7 +1,6 @@
 """Подписка на стрим котировок по минутным свечам и вывод получаемых свечей в консоль"""
 
 import asyncio
-import os
 from pprint import pprint
 
 from tinkoff.invest import (
@@ -17,7 +16,10 @@ from env.config import TOKEN
 
 
 async def main():
+    """main"""
+
     async def request_iterator():
+        """iterator"""
         yield MarketDataRequest(
             subscribe_candles_request=SubscribeCandlesRequest(
                 subscription_action=SubscriptionAction.SUBSCRIPTION_ACTION_SUBSCRIBE,
