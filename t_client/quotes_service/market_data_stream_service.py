@@ -23,6 +23,7 @@ class MarketDataStream:
         self.interval = interval
         self.set_interval()
         self.set_instruments_list()
+        self.data = None
         asyncio.run(self.wait_data())
 
     def set_interval(
@@ -44,12 +45,24 @@ class MarketDataStream:
             )
 
     async def wait_data(self):
+        """Create tasks with collecting data"""
+
+        get_data_task = asyncio.create_task(self.get_quotes())
+
+        self.data = await asyncio.gather(get_data_task)
+
+
+    async def get_quotes(self):
         """Wait data from broker"""
+        print('wait data run')
         async with AsyncClient(TOKEN) as client:
             async for marketdata in client.market_data_stream.market_data_stream(
                 self.request_iterator()
             ):
-                print(marketdata)
+
+                return marketdata
+
+
 
     async def request_iterator(self):
         """Returns data object from server"""
@@ -62,4 +75,4 @@ class MarketDataStream:
 
         yield resp
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)

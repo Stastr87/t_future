@@ -5,7 +5,6 @@ from enum import Enum
 
 class OperationTypes(Enum):
     """Operation types enum"""
-    TEST = 999
     OPERATION_TYPE_UNSPECIFIED = (0,"Тип операции не определён")
     OPERATION_TYPE_INPUT = (1, 'Пополнение брокерского счёта')
     OPERATION_TYPE_BOND_TAX = (2, 'Удержание НДФЛ по купонам')
@@ -87,8 +86,8 @@ class OperationTypes(Enum):
 
     # ЧТО ТО ДОЛЖНО ВОЗВРАЩАТЬ ИМЯ ПЕРЕМЕННОЙ ПО ЗНАЧЕНИЮ ENUM
     @classmethod
-    def _missing_(cls, value):
+    def get_name_by_id(cls, enum_id):
         for item in cls:
-            if item.value[0] == value:
-                return item
-        return super()._missing_(value)
+            if enum_id == item.value[0]:
+                return item.name
+        raise ValueError("%r is not a valid %s enum_id" % (enum_id, cls.__name__))
