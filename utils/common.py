@@ -48,3 +48,15 @@ class CustomThread(Thread):
 
         super().join(timeout)
         common_logger.info("%s Thread join method.", self.name)
+
+
+def display_result(func):
+    """Deco for print into terminal"""
+
+    def wrapper(*args, **kwargs):
+        """Wrapper func"""
+        result = func(*args, **kwargs)
+        if result:
+            print(result)
+
+    return wrapper

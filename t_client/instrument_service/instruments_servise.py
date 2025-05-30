@@ -2,25 +2,39 @@
 
 from datetime import datetime
 
-from tinkoff.invest import Client
+from tinkoff.invest import Client, Future, InstrumentIdType, GetDividendsRequest, GetDividendsResponse, Dividend
 from tinkoff.invest.exceptions import RequestError
 
 from env.config import TOKEN
+from t_client.instrument_service.instruments_id_types import InstrumentsIdTypes
+from t_client.instrument_service.schema.schema import DividendsSchema, NormalizedDividendsSchema
 from t_client.schemas.nearest_coupon_schema import NearestCouponSchema
+from t_client.utils.data_converter import t_quotation_to_float
 from utils.logger.common_logger import common_logger
 
 
 class InstrumentsService:
     """Сервис предназначен для получения информации об инструментах"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, instrument_figi: str = '', from_date: datetime = None, to_date: datetime = None):
 
-        self.set_token()
-        self.request_body = kwargs.get("BODY")
-
-    def set_token(self):
-        """Sets token attrib"""
         self._token = TOKEN
+        self.figi = instrument_figi
+        self.from_date = from_date
+        self.to_date = to_date
+
+    def set_instrument(self, instrument_figi):
+        """Set figi class attrib"""
+        self.figi = instrument_figi
+
+    def set_from_date(self, from_date: datetime):
+        """Set from_date class attrib for historic requests"""
+        self.from_date = from_date
+
+    def set_to_date(self, to_date: datetime):
+        """Set to_date class attrib for historic requests"""
+        self.to_date = to_date
+
 
     def get_bond_by_figi(self, figi):
         """Метод возвращает данные об инструменте типа Bond
@@ -90,7 +104,9 @@ class InstrumentsService:
             response_data = client.instruments.currency_by(id_type=1, id=currency_id)
         return response_data
 
-    def get_instrument_by(self, instrument_id):
+    def get_instrument_by(
+        self, instrument_id, market_id_type: InstrumentsIdTypes, class_code: str = ""
+    ):
         """GetInstrumentBy
         Метод получения основной информации об инструменте.
         Тело запроса:
@@ -98,11 +114,19 @@ class InstrumentsService:
         Тело ответа:
         InstrumentResponse https://tinkoff.github.io/investAPI/instruments/#instrumentresponse
         """
+        type_num = market_id_type.get_id_type
         with Client(self._token) as client:
-            response_data = client.instruments.get_instrument_by(
-                id_type=1, id=instrument_id
-            )
-        return response_data
+            if market_id_type == InstrumentsIdTypes.INSTRUMENT_ID_TYPE_TICKER:
+                response_data = client.instruments.get_instrument_by(
+                    id_type=InstrumentIdType(type_num),
+                    id=instrument_id,
+                    class_code=class_code,
+                )
+            else:
+                response_data = client.instruments.get_instrument_by(
+                    id_type=InstrumentIdType(type_num), id=instrument_id
+                )
+        return response_data.instrument
 
     def get_shares_list(self):
         """Получить список всех акций доступных к торговле"""
@@ -131,3 +155,49 @@ class InstrumentsService:
             futures_response = client.instruments.futures()
         instruments_list = futures_response.instruments
         return instruments_list
+
+    def get_futures_by(
+        self, future_id: str, market_id_type: InstrumentsIdTypes, class_code: str = ""
+    ) -> Future:
+        """Returns futures object by future id"""
+        type_num = market_id_type.get_id_type
+        with Client(self._token) as client:
+            if market_id_type == InstrumentsIdTypes.INSTRUMENT_ID_TYPE_TICKER:
+                response = client.instruments.future_by(
+                    id_type=InstrumentIdType(type_num),
+                    id=future_id,
+                    class_code=class_code,
+                )
+            else:
+                response = client.instruments.future_by(
+                    id_type=InstrumentIdType(type_num), id=future_id
+                )
+        return response.instrument
+
+    def get_dividends_from_t(self) -> list[Dividend]:
+        """T API GetDividends method
+        body = GetDividendsRequest
+        """
+
+        with Client(self._token) as client:
+            get_dividends_response = client.instruments.get_dividends(figi=self.figi,
+                                                                      from_=self.from_date,
+                                                                      to=self.to_date)
+        return get_dividends_response.dividends
+
+    def get_expected_dividends(self) -> list[NormalizedDividendsSchema]:
+        """Returns normalized data for future using"""
+        result: list[NormalizedDividendsSchema] = []
+        div_data = self.get_dividends_from_t()
+
+        for item in div_data:
+            value = t_quotation_to_float(item.yield_value)
+            last_buy_date = item.last_buy_date
+            currency = item.dividend_net.currency
+            new_item = NormalizedDividendsSchema(value=value,
+                                                 last_buy_date=last_buy_date,
+                                                 currency=currency)
+            result.append(new_item)
+
+        return result
+

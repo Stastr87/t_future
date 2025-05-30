@@ -4,9 +4,15 @@ import os
 import shelve
 from pathlib import Path
 
-from tinkoff.invest import Client, schemas
+from tinkoff.invest import (
+    Client,
+    GetCandlesResponse,
+    GetLastPricesResponse,
+    InstrumentClosePriceRequest,
+)
 
 from env.config import TOKEN
+from t_client.quotes_service.schema.schema import FigiListSchema
 
 
 class MarketDataService:
@@ -68,9 +74,8 @@ class MarketDataService:
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.token = TOKEN
-        self.request_body = kwargs.get("BODY")
 
     def get_close_prices_request(self, instrument_figi_id):
         """GetClosePricesRequest
@@ -84,26 +89,22 @@ class MarketDataService:
         https://tinkoff.github.io/investAPI/marketdata/#instrumentclosepricerequest
         """
 
-        instrument_close_price_request_object = schemas.InstrumentClosePriceRequest(
-            "figi"
-        )
-        instrument_close_price_request_object.instrument_id = instrument_figi_id
+        close_price_req_obj = InstrumentClosePriceRequest("figi")
+        close_price_req_obj.instrument_id = instrument_figi_id
 
         with Client(self.token) as client:
             response = client.market_data.get_close_prices(
-                instruments=[instrument_close_price_request_object]
+                instruments=[close_price_req_obj]
             )
         return response
 
-    def get_quotes_by_figi(self):
+    def get_quotes_by_figi(self, body: FigiListSchema) -> GetLastPricesResponse:
         """GetLastPrices
         Возвращает которивки инструментов по переданному листу figi
         """
-        figi_list = self.request_body["figi_list"]
 
-        response_data_list = []
         with Client(self.token) as client:
-            response_data_list = client.market_data.get_last_prices(figi=figi_list)
+            response_data_list = client.market_data.get_last_prices(figi=body.figi_list)
 
         return response_data_list
 
@@ -134,7 +135,7 @@ class MarketDataService:
         shelve_file["currencies"] = last_price_json_list
         shelve_file.close()
 
-    def get_candle_array(self):
+    def get_candle_array(self, body) -> GetCandlesResponse:
         """
         Метод запроса исторических свечей по инструменту.
         Тело запроса:
@@ -147,10 +148,10 @@ class MarketDataService:
 
         with Client(self.token) as client:
             candle_array = client.market_data.get_candles(
-                figi=self.request_body.figi,
-                from_=self.request_body.from_,
-                to=self.request_body.to,
-                interval=self.request_body.interval,
-                instrument_id=self.request_body.instrument_id,
+                figi=body.figi,
+                from_=body.from_,
+                to=body.to,
+                interval=body.interval,
+                instrument_id=body.instrument_id,
             )
         return candle_array
