@@ -1,6 +1,6 @@
 """Quotes scales schemas"""
 
-from t_client.base_schema import BaseSchema
+from clients.base_schema import BaseSchema
 
 
 class QuotesScalesResponse(BaseSchema):
@@ -16,5 +16,9 @@ class QuotesScalesResponse(BaseSchema):
 class CalculatedDataSchema(QuotesScalesResponse):
     """Calculated data schema"""
 
+    next_dividends_value: float | str = "-"
+    upcoming_dividends_days: int | str = "-"
     dif: float | str = "-"
     days_for_expiration: int | str = "-"
+    fair_price: float | str = "-"
+    deviation: float | str = "-"

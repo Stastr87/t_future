@@ -1,22 +1,32 @@
 """quote scales utils"""
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytz
 from prettytable import PrettyTable
 from tinkoff.invest import InstrumentType
 
-from quote_scales.schema.schema import (
+from clients.t_client.instrument_service.instruments_id_types import (
+    InstrumentsIdTypes,
+)
+from clients.t_client.instrument_service.instruments_servise import (
+    InstrumentsService,
+)
+from clients.t_client.quotes_service.quotes import MarketDataService
+from clients.t_client.quotes_service.schema.schema import FigiListSchema
+from clients.t_client.utils.data_converter import t_quotation_to_float
+from utils.common import display_result
+from utils.quote_scales.schema.schema import (
     CalculatedDataSchema,
     QuotesScalesResponse,
 )
-from quote_scales.utils.quote_scales_utils import get_dif, get_future_price
-from t_client.instrument_service.instruments_id_types import InstrumentsIdTypes
-from t_client.instrument_service.instruments_servise import InstrumentsService
-from t_client.quotes_service.quotes import MarketDataService
-from t_client.quotes_service.schema.schema import FigiListSchema
-from t_client.utils.data_converter import t_quotation_to_float
-from utils.common import display_result
+from utils.quote_scales.utils.quote_scales_utils import (
+    get_dif,
+    get_fair_future_price_as_str,
+    get_future_price,
+    get_percent_from_value_as_str, add_deviation,
+)
 
 
 class QuotesScales:
@@ -66,66 +76,94 @@ class QuotesScales:
         raw_data = self.get_quotes()
         calculation_result: list[CalculatedDataSchema] = []
 
+        base_instrument_dividend = 0
+        base_instrument_price = 0
+
         for i, instrument in enumerate(raw_data):
             new_item = CalculatedDataSchema()
-            if i == 0:
-                new_item = CalculatedDataSchema(
-                    figi_id=instrument.figi_id,
-                    instrument_name=instrument.instrument_name,
-                    currency=instrument.currency,
-                    ticker=instrument.ticker,
-                    price=instrument.price,
-                )
-            elif i > 0:
-                dif = get_dif(raw_data[i - 1].price, instrument.price)
-                new_item = CalculatedDataSchema(
-                    figi_id=instrument.figi_id,
-                    instrument_name=instrument.instrument_name,
-                    currency=instrument.currency,
-                    ticker=instrument.ticker,
-                    price=instrument.price,
-                    dif=round(dif, 2),
-                )
             instrument_info = InstrumentsService().get_instrument_by(
                 instrument.figi_id, InstrumentsIdTypes.INSTRUMENT_ID_TYPE_FIGI
             )
             match instrument_info.instrument_kind:
-
                 case InstrumentType.INSTRUMENT_TYPE_FUTURES:
                     futures = InstrumentsService().get_futures_by(
                         instrument.figi_id, InstrumentsIdTypes.INSTRUMENT_ID_TYPE_FIGI
                     )
+
                     new_item.days_for_expiration = (
                         futures.expiration_date - datetime.now(tz=pytz.UTC)
                     ).days
 
+                    fair_price = get_fair_future_price_as_str(
+                        base_instrument_price,
+                        new_item.days_for_expiration,
+                        base_instrument_dividend,
+                    )
+
+                    new_item.figi_id = instrument.figi_id
+                    new_item.instrument_name = instrument.instrument_name
+                    new_item.currency = instrument.currency
+                    new_item.ticker = instrument.ticker
+                    new_item.price = instrument.price
+                    new_item.dif = round(get_dif(raw_data[i - 1].price, instrument.price), 2)
+                    new_item.fair_price = fair_price
+
+                case _:
+                    new_item.figi_id = instrument.figi_id
+                    new_item.instrument_name = instrument.instrument_name
+                    new_item.currency = instrument.currency
+                    new_item.ticker = instrument.ticker
+                    new_item.price = instrument.price
+
+                    now = datetime.now(tz=pytz.UTC)
+                    next_year = now + timedelta(days=365)
+                    expected_dividends = InstrumentsService(
+                        instrument.figi_id, from_date=now, to_date=next_year
+                    ).get_expected_dividends()
+
+                    div_list = list(map(lambda x: x.value, expected_dividends))
+                    base_instrument_dividend = sum(div_list)
+                    base_instrument_price = instrument.price
+                    new_item.next_dividends_value = base_instrument_dividend
+
             calculation_result.append(new_item)
-        return calculation_result
+
+        result = add_deviation(calculation_result)
+
+        return result
+
 
     @display_result
     def show_table(self):
         """Show table with result"""
         calculated_data = self.get_calculation()
         table = PrettyTable()
+
         table.field_names = [
             "instrument",
-            "ticker",
             "currency",
             "price",
             "dif, %",
             "days_to_exp",
+            "next dividends",
+            "fair_price",
+            "deviation, %",
         ]
 
         if calculated_data:
             table.add_rows(
                 [
                     [
-                        item.instrument_name,
-                        item.ticker,
+                        f"{item.instrument_name} ({item.ticker})",
                         item.currency,
                         item.price,
                         item.dif,
                         item.days_for_expiration,
+                        get_percent_from_value_as_str(
+                            item.next_dividends_value, item.price
+                        ),
+                        item.fair_price,
+                        item.deviation,
                     ]
                     for item in calculated_data
                 ]

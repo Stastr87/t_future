@@ -1,9 +1,11 @@
 """common utils"""
 
+from json import JSONDecodeError, load
 from threading import Thread
 from traceback import print_exc
 from typing import Any
 
+from utils.exceptions import UtilException
 from utils.logger.common_logger import common_logger
 
 
@@ -60,3 +62,17 @@ def display_result(func):
             print(result)
 
     return wrapper
+
+
+def load_json_from_file(file_path: str) -> Any:
+    """Load json data from file"""
+
+    with open(file_path, encoding="utf-8") as file:
+        try:
+            result = load(file)
+        except JSONDecodeError as error:
+            raise UtilException(
+                f"Файл {file_path} содержит ошибки в структуре json"
+            ) from error
+
+    return result

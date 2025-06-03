@@ -15,5 +15,5 @@ python = "==3.12"
 
 [packages]
 tinkoff-investments = "0.2.0b111"
-
-
+requests = "*"
+pivotexport = "*"

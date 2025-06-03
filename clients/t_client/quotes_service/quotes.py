@@ -11,8 +11,8 @@ from tinkoff.invest import (
     InstrumentClosePriceRequest,
 )
 
+from clients.t_client.quotes_service.schema.schema import FigiListSchema
 from env.config import TOKEN
-from t_client.quotes_service.schema.schema import FigiListSchema
 
 
 class MarketDataService:

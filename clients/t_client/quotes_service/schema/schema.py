@@ -1,6 +1,6 @@
 """Schemas for quotes requests"""
 
-from t_client.base_schema import BaseSchema
+from clients.base_schema import BaseSchema
 
 
 class FigiListSchema(BaseSchema):

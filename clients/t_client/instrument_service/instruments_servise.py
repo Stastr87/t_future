@@ -2,21 +2,30 @@
 
 from datetime import datetime
 
-from tinkoff.invest import Client, Future, InstrumentIdType, GetDividendsRequest, GetDividendsResponse, Dividend
+from tinkoff.invest import Client, Dividend, Future, InstrumentIdType
 from tinkoff.invest.exceptions import RequestError
 
+from clients.t_client.instrument_service.instruments_id_types import (
+    InstrumentsIdTypes,
+)
+from clients.t_client.instrument_service.schema.schema import (
+    NormalizedDividendsSchema,
+)
+from clients.t_client.schemas.nearest_coupon_schema import NearestCouponSchema
+from clients.t_client.utils.data_converter import t_money_value_to_float
 from env.config import TOKEN
-from t_client.instrument_service.instruments_id_types import InstrumentsIdTypes
-from t_client.instrument_service.schema.schema import DividendsSchema, NormalizedDividendsSchema
-from t_client.schemas.nearest_coupon_schema import NearestCouponSchema
-from t_client.utils.data_converter import t_quotation_to_float
 from utils.logger.common_logger import common_logger
 
 
 class InstrumentsService:
     """Сервис предназначен для получения информации об инструментах"""
 
-    def __init__(self, instrument_figi: str = '', from_date: datetime = None, to_date: datetime = None):
+    def __init__(
+        self,
+        instrument_figi: str = "",
+        from_date: datetime = None,
+        to_date: datetime = None,
+    ):
 
         self._token = TOKEN
         self.figi = instrument_figi
@@ -34,7 +43,6 @@ class InstrumentsService:
     def set_to_date(self, to_date: datetime):
         """Set to_date class attrib for historic requests"""
         self.to_date = to_date
-
 
     def get_bond_by_figi(self, figi):
         """Метод возвращает данные об инструменте типа Bond
@@ -180,9 +188,9 @@ class InstrumentsService:
         """
 
         with Client(self._token) as client:
-            get_dividends_response = client.instruments.get_dividends(figi=self.figi,
-                                                                      from_=self.from_date,
-                                                                      to=self.to_date)
+            get_dividends_response = client.instruments.get_dividends(
+                figi=self.figi, from_=self.from_date, to=self.to_date
+            )
         return get_dividends_response.dividends
 
     def get_expected_dividends(self) -> list[NormalizedDividendsSchema]:
@@ -191,13 +199,12 @@ class InstrumentsService:
         div_data = self.get_dividends_from_t()
 
         for item in div_data:
-            value = t_quotation_to_float(item.yield_value)
+            value = t_money_value_to_float(item.dividend_net)
             last_buy_date = item.last_buy_date
             currency = item.dividend_net.currency
-            new_item = NormalizedDividendsSchema(value=value,
-                                                 last_buy_date=last_buy_date,
-                                                 currency=currency)
+            new_item = NormalizedDividendsSchema(
+                value=value, last_buy_date=last_buy_date, currency=currency
+            )
             result.append(new_item)
 
         return result
-

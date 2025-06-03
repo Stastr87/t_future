@@ -17,7 +17,7 @@ def t_quotation_to_float(quotation: Quotation) -> float:
     return value
 
 
-def tink_money_value_to_float(raw_data) -> float:
+def t_money_value_to_float(raw_data) -> float:
     """Конвертирует данные типа MoneyValue в тип float"""
     money_value = raw_data
     units = float(money_value.units)
