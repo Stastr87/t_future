@@ -7,4 +7,4 @@ if __name__ == "__main__":
     TRANSNEFT = ["BBG00475KHX6", "FUTTRNF06250", "FUTTRNF09250"]
     VTBR = ["BBG004730ZJ9", "FUTVTBR06250", "FUTVTBR09250"]
 
-    show_futures_calculating(VTBR)
+    show_futures_calculating(TRANSNEFT)
