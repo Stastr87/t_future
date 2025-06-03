@@ -16,6 +16,7 @@ def get_token() -> str:
     if env_var:
         token = env_var
     else:
+
         with open(
             os.path.join(
                 NEW_WORK_DIR,
@@ -27,5 +28,5 @@ def get_token() -> str:
         ) as file:
             data = file.read()
             json_data = json.loads(data)
-            token = json_data["api_key"]
+        token = json_data["api_key"]
     return token

@@ -1,7 +1,6 @@
 """quote scales utils"""
 
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pytz
 from prettytable import PrettyTable
@@ -16,16 +15,17 @@ from clients.t_client.instrument_service.instruments_servise import (
 from clients.t_client.quotes_service.quotes import MarketDataService
 from clients.t_client.quotes_service.schema.schema import FigiListSchema
 from clients.t_client.utils.data_converter import t_quotation_to_float
-from utils.common import display_result
+from utils.common import display_result, sum_elements
 from utils.quote_scales.schema.schema import (
     CalculatedDataSchema,
     QuotesScalesResponse,
 )
 from utils.quote_scales.utils.quote_scales_utils import (
+    add_futures_deviation,
     get_dif,
     get_fair_future_price_as_str,
     get_future_price,
-    get_percent_from_value_as_str, add_deviation,
+    get_percent_from_value_as_str,
 )
 
 
@@ -74,10 +74,10 @@ class QuotesScales:
     def get_calculation(self) -> list[CalculatedDataSchema]:
         """Returns calculated data for group of instruments"""
         raw_data = self.get_quotes()
-        calculation_result: list[CalculatedDataSchema] = []
+        calculation_object: list[CalculatedDataSchema] = []
 
-        base_instrument_dividend = 0
-        base_instrument_price = 0
+        base_instrument_dividend: float = 0
+        base_instrument_price: float = 0
 
         for i, instrument in enumerate(raw_data):
             new_item = CalculatedDataSchema()
@@ -94,19 +94,19 @@ class QuotesScales:
                         futures.expiration_date - datetime.now(tz=pytz.UTC)
                     ).days
 
-                    fair_price = get_fair_future_price_as_str(
-                        base_instrument_price,
-                        new_item.days_for_expiration,
-                        base_instrument_dividend,
-                    )
-
                     new_item.figi_id = instrument.figi_id
                     new_item.instrument_name = instrument.instrument_name
                     new_item.currency = instrument.currency
                     new_item.ticker = instrument.ticker
                     new_item.price = instrument.price
-                    new_item.dif = round(get_dif(raw_data[i - 1].price, instrument.price), 2)
-                    new_item.fair_price = fair_price
+                    new_item.dif = round(
+                        get_dif(raw_data[i - 1].price, instrument.price), 2
+                    )
+                    new_item.fair_price = get_fair_future_price_as_str(
+                        base_instrument_price,
+                        new_item.days_for_expiration,
+                        base_instrument_dividend,
+                    )
 
                 case _:
                     new_item.figi_id = instrument.figi_id
@@ -122,16 +122,13 @@ class QuotesScales:
                     ).get_expected_dividends()
 
                     div_list = list(map(lambda x: x.value, expected_dividends))
-                    base_instrument_dividend = sum(div_list)
+                    base_instrument_dividend = sum_elements(div_list)
                     base_instrument_price = instrument.price
                     new_item.next_dividends_value = base_instrument_dividend
 
-            calculation_result.append(new_item)
+            calculation_object.append(new_item)
 
-        result = add_deviation(calculation_result)
-
-        return result
-
+        return add_futures_deviation(calculation_object)
 
     @display_result
     def show_table(self):

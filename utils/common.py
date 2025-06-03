@@ -64,7 +64,14 @@ def display_result(func):
     return wrapper
 
 
-def load_json_from_file(file_path: str) -> Any:
+def sum_elements(target_list: list[float | int]) -> float:
+    """Recursive returns sum of the list elements"""
+    if len(target_list) == 0:
+        return 0
+    return target_list[0] + sum_elements(target_list[1:])
+
+
+def load_json_from_file(file_path: str):
     """Load json data from file"""
 
     with open(file_path, encoding="utf-8") as file:

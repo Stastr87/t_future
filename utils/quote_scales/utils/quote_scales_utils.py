@@ -96,7 +96,13 @@ def get_fair_future_price_as_str(
 
     return str(result)
 
-def add_deviation(calc_data_set: list[CalculatedDataSchema]) -> list[CalculatedDataSchema]:
-    """Adds deviation value to data set"""
-    calc_data_set[2].deviation = round(get_dif(float(calc_data_set[1].fair_price), float(calc_data_set[2].fair_price)), 2)
+
+def add_futures_deviation(
+    calc_data_set: list[CalculatedDataSchema],
+) -> list[CalculatedDataSchema]:
+    """Adds the deviation value between futures to data set"""
+    calc_data_set[2].deviation = round(
+        get_dif(float(calc_data_set[1].fair_price), float(calc_data_set[2].fair_price)),
+        2,
+    )
     return calc_data_set

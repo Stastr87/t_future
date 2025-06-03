@@ -7,13 +7,14 @@ name = "pypi"
 black = "==24.10.0"
 isort = "==5.13.2"
 mypy = "==1.13.0"
-pylint = "==3.3.1"
 flake8 = "==7.1.1"
+pylint = "==3.3.7"
 
 [requires]
 python = "==3.12"
 
 [packages]
-tinkoff-investments = "0.2.0b111"
-requests = "*"
-pivotexport = "*"
+tinkoff-investments = "==0.2.0b111"
+pytz = "==2025.2"
+prettytable = "==3.16.0"
+pydantic = "==2.11.5"
