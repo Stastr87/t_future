@@ -2,7 +2,13 @@
 
 from datetime import datetime
 
-from tinkoff.invest import Client, Dividend, Future, InstrumentIdType
+from tinkoff.invest import (
+    Client,
+    Dividend,
+    Future,
+    InstrumentIdType,
+    InstrumentType,
+)
 from tinkoff.invest.exceptions import RequestError
 
 from clients.t_client.instrument_service.instruments_id_types import (
@@ -111,6 +117,21 @@ class InstrumentsService:
         with Client(self._token) as client:
             response_data = client.instruments.currency_by(id_type=1, id=currency_id)
         return response_data
+
+    def find_instrument(
+        self, query_str: str, type_: InstrumentType = InstrumentType(2)
+    ):
+        """Returns list of instruments by any fild, default type is share"""
+
+        if len(query_str) > 6:
+            query_str = query_str[:6]
+
+        with Client(self._token) as client:
+            response = client.instruments.find_instrument(
+                query=query_str, instrument_kind=type_, api_trade_available_flag=True
+            )
+        instruments_list = response.instruments
+        return instruments_list
 
     def get_instrument_by(
         self, instrument_id, market_id_type: InstrumentsIdTypes, class_code: str = ""

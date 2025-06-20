@@ -104,7 +104,9 @@ class MarketDataService:
         """
 
         with Client(self.token) as client:
-            response_data_list = client.market_data.get_last_prices(figi=body.figi_list)
+            response_data_list = client.market_data.get_last_prices(
+                figi=list(body.figi_list)
+            )
 
         return response_data_list
 

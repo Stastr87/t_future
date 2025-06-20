@@ -15,14 +15,13 @@ from clients.t_client.instrument_service.instruments_servise import (
 from clients.t_client.quotes_service.quotes import MarketDataService
 from clients.t_client.quotes_service.schema.schema import FigiListSchema
 from clients.t_client.utils.data_converter import t_quotation_to_float
-from utils.common import display_result, sum_elements
+from utils.common import display_result, get_dif, sum_elements
 from utils.quote_scales.schema.schema import (
     CalculatedDataSchema,
     QuotesScalesResponse,
 )
 from utils.quote_scales.utils.quote_scales_utils import (
     add_futures_deviation,
-    get_dif,
     get_fair_future_price_as_str,
     get_future_price,
     get_percent_from_value_as_str,
@@ -32,7 +31,7 @@ from utils.quote_scales.utils.quote_scales_utils import (
 class QuotesScales:
     """It contains a set of functions for comparing instrument quotes"""
 
-    def __init__(self, instruments_list: list[str]):
+    def __init__(self, instruments_list: tuple[str, ...]):
         self.instruments = instruments_list
 
     def get_last_prises_for_figi_list(self):

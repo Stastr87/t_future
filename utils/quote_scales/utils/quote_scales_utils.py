@@ -4,19 +4,8 @@ from tinkoff.invest import Future, Quotation
 
 from clients.cbr.utils.cbr_utils import get_current_key_rate
 from clients.t_client.utils.data_converter import t_quotation_to_float
-from utils.logger.common_logger import common_logger
+from utils.common import get_dif
 from utils.quote_scales.schema.schema import CalculatedDataSchema
-
-
-def get_dif(quote_one: float, qoute_two: float) -> float:
-    """Returns percent diference between two values
-    result = ((qoute_two – quote_one) / quote_one) × 100"""
-    try:
-        dif = ((qoute_two - quote_one) / quote_one) * 100
-    except ZeroDivisionError as err:
-        common_logger.warning("Zero value cached: %s", err)
-        dif = 0
-    return dif
 
 
 def get_percent_from_value(a, b) -> float:
@@ -101,8 +90,19 @@ def add_futures_deviation(
     calc_data_set: list[CalculatedDataSchema],
 ) -> list[CalculatedDataSchema]:
     """Adds the deviation value between futures to data set"""
-    calc_data_set[2].deviation = round(
-        get_dif(float(calc_data_set[1].fair_price), float(calc_data_set[2].fair_price)),
-        2,
-    )
+
+    for i, item in enumerate(calc_data_set):
+        if i == 0:
+            continue
+        if i == 1:
+            dif = get_dif(float(item.fair_price), float(calc_data_set[0].price))
+            item.deviation = round(dif, 2)
+            continue
+        if i > 1:
+            dif = get_dif(
+                float(calc_data_set[i - 1].fair_price),
+                float(calc_data_set[i].fair_price),
+            )
+            item.deviation = round(dif, 2)
+
     return calc_data_set

@@ -10,3 +10,4 @@ path.append(NEW_WORK_DIR)
 
 TOKEN = get_token()
 LOG_DIR = os.path.join(NEW_WORK_DIR, "logs")
+TMP_DIR = os.path.join(NEW_WORK_DIR, "tmp")

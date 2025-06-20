@@ -1,1 +1,54 @@
 [2025-06-02 00:26:16.121] [WARNING] Zero value cached: float division by zero
+[2025-06-18 22:08:51.339] [INFO] base_instrument_name Транснефть - привилегированные акции
+[2025-06-18 22:09:41.694] [INFO] base_instrument_name Транснефть - привилегированные акции
+[2025-06-18 22:35:21.122] [ERROR] (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='38a2997eaeaebba73b7112794ceaab1d', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=45, message='Instrument not found'))
+[2025-06-18 22:37:34.449] [INFO] Инструмент не найден!
+[2025-06-18 22:37:34.456] [ERROR] (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='e58e0e34ecf1dd4745142fc2ddc2f099', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=32, message='Instrument not found'))
+[2025-06-18 22:38:48.450] [INFO] Инструмент не найден!
+[2025-06-18 22:38:48.450] [ERROR] T brocker error: (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='b3e334f988ecf418b010dcf6f11b051d', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=18, message='Instrument not found'))
+[2025-06-18 22:41:13.321] [INFO] Инструмент не найден!
+[2025-06-18 22:41:13.321] [ERROR] T brocker error: (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='28fb9cd8ccb138a21d050a109647f38b', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=53, message='Instrument not found'))
+[2025-06-18 23:08:14.172] [INFO] Инструмент не найден!
+[2025-06-18 23:08:14.173] [ERROR] T brocker error: (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='6a4e2fb8a092dbf2eba0ac9e019632b0', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=52, message='Instrument not found'))
+[2025-06-18 23:10:00.747] [INFO] Инструмент не найден!
+[2025-06-18 23:10:00.748] [ERROR] T brocker error: (<StatusCode.NOT_FOUND: (5, 'not found')>, '50002', Metadata(tracking_id='7df0fa6893e536f44c0c6eb2636740d2', ratelimit_limit='200, 200;w=60', ratelimit_remaining=199, ratelimit_reset=6, message='Instrument not found'))
+[2025-06-18 23:36:24.768] [WARNING] Impossible to get data from temp file. 
+ Traceback: b'futures_list'
+[2025-06-18 23:36:39.016] [WARNING] Impossible to get data from temp file. 
+ Traceback: b'futures_list'
+[2025-06-18 23:38:06.301] [WARNING] Impossible to get data from temp file.
+Traceback: b'futures_list'
+[2025-06-19 00:20:12.501] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 00:20:21.247] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 00:22:09.816] [WARNING] Инструмент не найден. Уточните параметры поиска
+[2025-06-19 00:22:55.544] [WARNING] Инструмент не найден. Уточните параметры поиска
+[2025-06-19 00:23:25.520] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 00:27:47.318] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 15:00:47.006] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 15:02:09.427] [WARNING] Фьючерсов для указанного базового инструмента не найдено
+[2025-06-19 15:02:24.213] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 15:03:34.570] [WARNING] Найдено более одного базового инструмента. Уточните название
+[2025-06-19 15:15:08.128] [WARNING] Фьючерсов для указанного базового инструмента не найдено
+[2025-06-19 15:20:03.755] [WARNING] Фьючерсов для указанного базового инструмента не найдено
+[2025-06-19 15:22:21.601] [WARNING] ('Фьючерсов для базового инструмента %s не найдено', 'SBERP')
+[2025-06-19 15:26:24.754] [WARNING] Фьючерсов для базового инструмента SBERP не найдено
+[2025-06-19 15:37:42.898] [INFO] Can't get dif between previous value
+[2025-06-19 15:37:58.905] [INFO] Can't get dif between previous value
+[2025-06-19 15:52:50.364] [WARNING] Фьючерсов для базового инструмента SBERP не найдено
+[2025-06-19 16:03:04.150] [WARNING] Фьючерсов для базового инструмента SBERP не найдено
+[2025-06-19 16:24:25.693] [WARNING] Фьючерсов для базового инструмента Сбер Банк - привилегированные акции не найдено
+[2025-06-19 16:40:01.089] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 16:41:44.982] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 16:42:32.738] [WARNING] Фьючерсов для базового инструмента "Банк ВТБ" не найдено
+[2025-06-19 16:42:51.324] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 16:47:50.845] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 22:41:14.583] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 22:43:04.087] [WARNING] Фьючерсов для базового инструмента "Сбер Банк - привилегированные акции" не найдено
+[2025-06-19 22:49:35.388] [WARNING] Фьючерсов для базового инструмента "Банк ВТБ" не найдено
+[2025-06-19 22:50:17.269] [WARNING] Фьючерсов для базового инструмента "Банк ВТБ" не найдено
+[2025-06-19 23:17:53.009] [WARNING] Zero value cached: division by zero
+[2025-06-19 23:18:36.766] [INFO] Can't get dif between previous value.
+Traceback: could not convert string to float: '-'
+[2025-06-19 23:18:36.767] [WARNING] Zero value cached: division by zero
+[2025-06-19 23:19:22.174] [INFO] Can't get dif between previous value.
+Traceback: could not convert string to float: '-'

@@ -83,3 +83,14 @@ def load_json_from_file(file_path: str):
             ) from error
 
     return result
+
+
+def get_dif(quote_one: float, qoute_two: float) -> float:
+    """Returns percent diference between two values
+    result = ((qoute_two – quote_one) / quote_one) × 100"""
+    try:
+        dif = ((qoute_two - quote_one) / quote_one) * 100
+    except ZeroDivisionError as err:
+        common_logger.warning("Zero value cached: %s", err)
+        dif = 0
+    return dif
