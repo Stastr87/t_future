@@ -99,7 +99,7 @@ class QuotesScales:
                     new_item.ticker = instrument.ticker
                     new_item.price = instrument.price
                     new_item.dif = round(
-                        get_dif(raw_data[i - 1].price, instrument.price), 2
+                        get_dif(instrument.price, raw_data[i - 1].price), 2
                     )
                     new_item.fair_price = get_fair_future_price_as_str(
                         base_instrument_price,
