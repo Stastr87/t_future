@@ -100,8 +100,8 @@ def add_futures_deviation(
             continue
         if i > 1:
             dif = get_dif(
-                float(calc_data_set[i - 1].fair_price),
                 float(calc_data_set[i].fair_price),
+                float(calc_data_set[i - 1].fair_price)
             )
             item.deviation = round(dif, 2)
 

@@ -140,9 +140,9 @@ class QuotesScales:
             "currency",
             "price",
             "dif, %",
-            "days_to_exp",
+            "days to exp",
             "next dividends",
-            "fair_price",
+            "fair future price",
             "deviation, %",
         ]
 
