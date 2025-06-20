@@ -28,4 +28,4 @@
 py .\show_me_future.py  "сбер"
 `\
 Вывод:
-![output example](output_example.png)
+![output example](src/output_example.png)
