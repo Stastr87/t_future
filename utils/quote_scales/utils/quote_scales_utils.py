@@ -71,11 +71,12 @@ def get_fair_future_price_as_str(
 
     # Если переданное значение days_to_expiration - число, то инструмент является фьючерсом
     # В противном случае возвращаем цену инструмента обратно т.к. это базовый инструмент
-    if (
-        (isinstance(days_to_expiration, int))
-        and (isinstance(base_instrument_price, float))
-        and (isinstance(dividend_value, float))
+    if (isinstance(days_to_expiration, int)) and (
+        isinstance(base_instrument_price, float)
     ):
+        if not isinstance(dividend_value, float):
+            dividend_value = 0
+
         result = round(
             get_fair_future_price(
                 base_instrument_price, days_to_expiration, dividend_value
@@ -101,7 +102,7 @@ def add_futures_deviation(
         if i > 1:
             dif = get_dif(
                 float(calc_data_set[i].fair_price),
-                float(calc_data_set[i - 1].fair_price)
+                float(calc_data_set[i - 1].fair_price),
             )
             item.deviation = round(dif, 2)
 
